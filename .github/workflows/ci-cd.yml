@@ -1,0 +1,54 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: crm
+          POSTGRES_USER: crmuser
+          POSTGRES_PASSWORD: crmpass
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build frontend
+        run: |
+          cd frontend
+          npm install
+          npm run build
+      - name: Build backend
+        run: |
+          cd backend
+          ./mvnw clean package
+      - name: Run tests frontend
+        run: |
+          cd frontend
+          npm test -- --watchAll=false
+      - name: Run tests backend
+        run: |
+          cd backend
+          ./mvnw test
+
+  deploy:
+    needs: build-test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deploy to server
+        run: echo "Déploiement automatique à configurer (ex: via SSH, Docker, etc.)"

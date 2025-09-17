@@ -1,0 +1,51 @@
+version: '3.8'
+services:
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+
+  backend:
+    build: ./backend
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/crm
+      - SPRING_DATASOURCE_USERNAME=crmuser
+      - SPRING_DATASOURCE_PASSWORD=crmpass
+    depends_on:
+      - db
+
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: crm
+      POSTGRES_USER: crmuser
+      POSTGRES_PASSWORD: crmpass
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
+volumes:
+  db_data:
+
+# Mini CRM
+
+## Lancement local
+
+```bash
+npm install
+npm run dev
+```
+
+## Lancement avec Docker
+
+```bash
+docker-compose up --build
+```
+
+## Variables d’environnement
+
+Voir `.env.example`
