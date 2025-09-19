@@ -3,22 +3,16 @@ import cors from "cors";
 import dotenv from "dotenv";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import pkg from "pg";
+import pool from "./db.js"; // ✅ Utilisation du pool unique
 
 dotenv.config();
-const { Pool } = pkg;
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-const pool = new Pool({
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  host: process.env.DB_HOST,
-  port: process.env.DB_PORT,
-  database: process.env.DB_NAME,
-});
+import authRoutes from "./routes/auth.js";
+app.use("/api/auth", authRoutes);
 
 // Test API
 app.get("/", (req, res) => {
@@ -57,7 +51,7 @@ function authenticateToken(req, res, next) {
   });
 }
 
-// CRUD Clients (protégé)
+// CRUD Clients
 app.get("/api/clients", authenticateToken, async (req, res) => {
   const result = await pool.query("SELECT * FROM clients ORDER BY id DESC");
   res.json(result.rows);
@@ -88,11 +82,57 @@ app.delete("/api/clients/:id", authenticateToken, async (req, res) => {
   res.json({ message: "Client supprimé" });
 });
 
+// ✅ Endpoint pour les stats
+app.get("/api/stats/dashboard", async (req, res) => {
+  try {
+    const clientCountRes = await pool.query("SELECT COUNT(*) FROM clients");
+    const contractCountRes = await pool.query("SELECT COUNT(*) FROM contracts");
+    const revenueRes = await pool.query("SELECT COALESCE(SUM(amount), 0) FROM contracts");
+
+    const contractsHistory = [
+      { month: "Jan", contracts: 3 },
+      { month: "Fév", contracts: 6 },
+      { month: "Mar", contracts: 5 },
+      { month: "Avr", contracts: 8 },
+      { month: "Mai", contracts: 10 },
+      { month: "Juin", contracts: 12 },
+    ];
+
+    res.json({
+      clientCount: parseInt(clientCountRes.rows[0].count),
+      contractCount: parseInt(contractCountRes.rows[0].count),
+      revenue: revenueRes.rows[0].coalesce || 0,
+      contractsHistory,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Erreur lors de la récupération des statistiques" });
+  }
+});
+
+// ✅ Endpoint pour les activités récentes
+app.get("/api/activities/recent", async (req, res) => {
+  try {
+    const activities = [
+      { id: 1, date: "2025-09-18", type: "Client ajouté", description: "Jean Dupont", status: "Succès" },
+      { id: 2, date: "2025-09-17", type: "Contrat signé", description: "Contrat #C-123", status: "Succès" },
+      { id: 3, date: "2025-09-16", type: "Client modifié", description: "Marie Claire", status: "Succès" },
+      { id: 4, date: "2025-09-16", type: "Contrat résilié", description: "Contrat #C-098", status: "Annulé" },
+      { id: 5, date: "2025-09-15", type: "Service activé", description: "Hébergement Web", status: "Succès" },
+    ];
+
+    res.json(activities);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Erreur lors du chargement des activités récentes" });
+  }
+});
+
 // Middleware de gestion des erreurs
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ error: "Erreur serveur" });
 });
 
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🚀 Backend démarré sur http://localhost:${PORT}`));
