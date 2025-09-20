@@ -1,13 +1,13 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "type": "module", 
+  "type": "module",
   "main": "server.js",
   "scripts": {
-  "dev": "nodemon server.js",
-  "start": "node server.js",
-  "test": "echo \"Pas de tests encore\""
-},
+    "dev": "nodemon server.js",
+    "start": "node server.js",
+    "test": "cross-env NODE_ENV=test node --experimental-vm-modules ./node_modules/jest/bin/jest.js --runInBand"
+  },
   "dependencies": {
     "bcrypt": "^5.1.0",
     "cors": "^2.8.5",
@@ -17,6 +17,8 @@
     "pg": "^8.11.3"
   },
   "devDependencies": {
+    "cross-env": "^10.0.0",
+    "jest": "^30.1.3",
     "nodemon": "^3.1.10"
   }
 }

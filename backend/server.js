@@ -134,5 +134,13 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: "Erreur serveur" });
 });
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`🚀 Backend démarré sur http://localhost:${PORT}`));
+// const PORT = process.env.PORT || 5000;
+// app.listen(PORT, () => console.log(`🚀 Backend démarré sur http://localhost:${PORT}`));
+
+// ⛔ NE PAS démarrer le serveur si on est en mode test
+if (process.env.NODE_ENV !== "test") {
+  const PORT = process.env.PORT || 5000;
+  app.listen(PORT, () => console.log(`🚀 Backend sur http://localhost:${PORT}`));
+}
+
+export default app;

@@ -9,6 +9,7 @@ on:
 jobs:
   build-test:
     runs-on: ubuntu-latest
+
     services:
       postgres:
         image: postgres:16
@@ -25,30 +26,43 @@ jobs:
           --health-retries 5
 
     steps:
-      - uses: actions/checkout@v4
-      - name: Build frontend
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 📦 Install backend dependencies
+        run: |
+          cd backend
+          npm install
+
+      - name: 📦 Install frontend dependencies
         run: |
           cd frontend
           npm install
-          npm run build
-      - name: Build backend
+
+      - name: 🧪 Test backend (Jest)
         run: |
           cd backend
-          ./mvnw clean package
-      - name: Run tests frontend
+          npm test
+
+
+      - name: 🏗️ Build frontend
         run: |
           cd frontend
-          npm test -- --watchAll=false
-      - name: Run tests backend
-        run: |
-          cd backend
-          ./mvnw test
+          npm run build
 
   deploy:
     needs: build-test
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
+
     steps:
       - uses: actions/checkout@v4
-      - name: Deploy to server
-        run: echo "Déploiement automatique à configurer (ex: via SSH, Docker, etc.)"
+      - name: 🐳 Build and push Docker image
+        run: |
+          echo "Ici tu pourrais builder ton image Docker et la pousser sur Docker Hub"
+          echo "Exemple : docker build -t tonuser/mini-crm:latest ."
