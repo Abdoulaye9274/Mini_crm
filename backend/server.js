@@ -1,8 +1,9 @@
-import express from "express";
 import cors from "cors";
+import express from "express";
+import authRoutes from "./routes/auth.js";
+import contractRoutes from "./routes/contracts.js"; // Importer les routes de contrats
+import { authenticateToken } from "./middleware/auth.js"; // Importer le middleware
 import dotenv from "dotenv";
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
 import pool from "./db.js"; // ✅ Utilisation du pool unique
 
 dotenv.config();
@@ -11,45 +12,13 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-import authRoutes from "./routes/auth.js";
 app.use("/api/auth", authRoutes);
+app.use("/api/contracts", contractRoutes); // Utiliser les routes de contrats
 
 // Test API
 app.get("/", (req, res) => {
   res.send("🚀 API Mini CRM fonctionne ✅");
 });
-
-// Authentification
-app.post("/api/login", async (req, res) => {
-  const { login, password } = req.body;
-  try {
-    const result = await pool.query("SELECT * FROM users WHERE login = $1", [login]);
-    if (result.rows.length === 0) return res.status(401).json({ error: "Identifiants introuvables" });
-
-    const user = result.rows[0];
-    const isValid = await bcrypt.compare(password, user.password);
-    if (!isValid) return res.status(401).json({ error: "Identifiants introuvables" });
-
-    const token = jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET, { expiresIn: "1h" });
-    res.json({ token, user: { id: user.id, login: user.login, role: user.role } });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Erreur serveur" });
-  }
-});
-
-// Middleware de vérification du token JWT
-function authenticateToken(req, res, next) {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
-  if (!token) return res.status(401).json({ error: "Token manquant" });
-
-  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-    if (err) return res.status(403).json({ error: "Token invalide" });
-    req.user = user;
-    next();
-  });
-}
 
 // CRUD Clients
 app.get("/api/clients", authenticateToken, async (req, res) => {

@@ -7,6 +7,7 @@ import {
 import PeopleIcon from "@mui/icons-material/People";
 import SettingsIcon from "@mui/icons-material/Settings";
 import LogoutIcon from "@mui/icons-material/Logout";
+import DescriptionIcon from "@mui/icons-material/Description";
 
 const drawerWidth = 220;
 
@@ -38,19 +39,27 @@ export default function DashboardLayout() {
           <Typography variant="h6" sx={{ fontWeight: "bold" }}>Mini CRM</Typography>
         </Toolbar>
         <List>
-          <ListItemButton onClick={() => navigate("/dashboard")}>
-            <ListItemIcon sx={{ color: "#fff" }}><PeopleIcon /></ListItemIcon>
-            <ListItemText primary="Tableau de bord" />
-          </ListItemButton>
-          <ListItemButton onClick={() => navigate("/dashboard/clients")}>
-            <ListItemIcon sx={{ color: "#fff" }}><PeopleIcon /></ListItemIcon>
-            <ListItemText primary="Clients" />
-          </ListItemButton>
-          <ListItemButton onClick={() => alert("Bientôt disponible")}>
-            <ListItemIcon sx={{ color: "#fff" }}><SettingsIcon /></ListItemIcon>
-            <ListItemText primary="Paramètres" />
-          </ListItemButton>
-        </List>
+  <ListItemButton onClick={() => navigate("/dashboard")}>
+    <ListItemIcon sx={{ color: "#fff" }}><PeopleIcon /></ListItemIcon>
+    <ListItemText primary="Tableau de bord" />
+  </ListItemButton>
+
+  <ListItemButton onClick={() => navigate("/dashboard/clients")}>
+    <ListItemIcon sx={{ color: "#fff" }}><PeopleIcon /></ListItemIcon>
+    <ListItemText primary="Clients" />
+  </ListItemButton>
+
+  <ListItemButton onClick={() => navigate("/dashboard/contracts")}>
+    <ListItemIcon sx={{ color: "#fff" }}><DescriptionIcon /></ListItemIcon>
+    <ListItemText primary="Contrats" />
+  </ListItemButton>
+
+  <ListItemButton onClick={() => alert("Bientôt disponible")}>
+    <ListItemIcon sx={{ color: "#fff" }}><SettingsIcon /></ListItemIcon>
+    <ListItemText primary="Paramètres" />
+  </ListItemButton>
+</List>
+
         <Box sx={{ flexGrow: 1 }} />
         <Box sx={{ p: 2 }}>
           <Button

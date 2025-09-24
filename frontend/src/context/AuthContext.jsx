@@ -7,9 +7,15 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    // Récupérer le user depuis le localStorage si présent
-    const savedUser = localStorage.getItem("user");
-    if (savedUser) setUser(JSON.parse(savedUser));
+    try {
+      const savedUser = localStorage.getItem("user");
+      if (savedUser && savedUser !== "undefined" && savedUser !== "null") {
+        setUser(JSON.parse(savedUser));
+      }
+    } catch (err) {
+      console.error("Erreur lors du parsing de user dans localStorage :", err);
+      localStorage.removeItem("user"); // 🔧 supprime les données corrompues
+    }
   }, []);
 
   const login = (userData) => {

@@ -14,7 +14,7 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await api.post("/login", { login, password }); // ✅ attention à l’URL
+      const res = await api.post("/auth/login", { login, password }); // ✅ attention à l’URL
       localStorage.setItem("token", res.data.token);
       saveUser(res.data.user); // ✅ enregistre user dans le contexte
       navigate("/dashboard");
