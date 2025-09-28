@@ -52,7 +52,7 @@ jobs:
       - name: 🧪 Test backend (Jest)
         run: |
           cd backend
-          npm test
+          NODE_ENV=test npm test
 
       - name: 🏗️ Build frontend
         run: |
