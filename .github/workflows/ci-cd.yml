@@ -54,6 +54,7 @@ jobs:
           cd backend
           NODE_ENV=test npm test
 
+
       - name: 🏗️ Build frontend
         run: |
           cd frontend

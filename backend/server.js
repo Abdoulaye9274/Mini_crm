@@ -6,13 +6,13 @@ import { authenticateToken } from "./middleware/auth.js"; // Importer le middlew
 import dotenv from "dotenv";
 import pool from "./db.js"; // ✅ Utilisation du pool unique
 
-dotenv.config();
 if (process.env.NODE_ENV === "test") {
   dotenv.config({ path: ".env.test" });
   console.log("✅ Fichier .env.test chargé");
 } else {
   dotenv.config();
 }
+
 const app = express();
 app.use(cors());
 app.use(express.json());
