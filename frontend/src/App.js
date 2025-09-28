@@ -5,6 +5,8 @@ import Clients from "./pages/Clients";
 import Dashboard from "./pages/Dashboard"; // ✅ importe ton Dashboard
 import Contracts from "./pages/Contracts";
 import DashboardLayout from "./components/DashboardLayout";
+import Settings from "./pages/Settings"; // Assurez-vous que cette ligne est ajoutée
+
 
 function PrivateRoute({ children }) {
   const token = localStorage.getItem("token");
@@ -29,6 +31,8 @@ export default function App() {
   <Route path="clients" element={<Clients />} />
   {/* 📌 Route contrats */}
   <Route path="contracts" element={<Contracts />} />
+  {/* �� Route paramètres */}
+  <Route path="settings" element={<Settings />} /> {/* Ajouter la nouvelle route */}
 </Route>
 
       </Routes>

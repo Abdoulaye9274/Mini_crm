@@ -54,7 +54,7 @@ export default function DashboardLayout() {
     <ListItemText primary="Contrats" />
   </ListItemButton>
 
-  <ListItemButton onClick={() => alert("Bientôt disponible")}>
+  <ListItemButton onClick={() => navigate("/dashboard/settings")}>
     <ListItemIcon sx={{ color: "#fff" }}><SettingsIcon /></ListItemIcon>
     <ListItemText primary="Paramètres" />
   </ListItemButton>

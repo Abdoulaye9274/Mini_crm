@@ -44,11 +44,15 @@ jobs:
           cd frontend
           npm install
 
+      - name: 🔧 Fix permissions for node binaries
+        run: |
+          cd backend
+          chmod +x ./node_modules/.bin/* || true
+
       - name: 🧪 Test backend (Jest)
         run: |
           cd backend
           npm test
-
 
       - name: 🏗️ Build frontend
         run: |
@@ -62,6 +66,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+
       - name: 🐳 Build and push Docker image
         run: |
           echo "Ici tu pourrais builder ton image Docker et la pousser sur Docker Hub"
