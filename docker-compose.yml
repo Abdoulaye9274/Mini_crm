@@ -1,3 +1,5 @@
+version: "3.8"
+
 services:
   frontend:
     build: ./frontend
@@ -13,17 +15,25 @@ services:
     env_file:
       - ./backend/.env
     depends_on:
-      - db
+      db:
+        condition: service_healthy
 
   db:
     image: postgres:16
     environment:
-      POSTGRES_DB: ${DB_NAME:-crm}
-      POSTGRES_USER: ${DB_USER:-crmuser}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-crmpass}
+      POSTGRES_DB: crm
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
     volumes:
       - db_data:/var/lib/postgresql/data
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres", "-d", "crm"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 volumes:
   db_data:

@@ -1,22 +1,36 @@
 import cors from "cors";
 import express from "express";
 import authRoutes from "./routes/auth.js";
-import contractRoutes from "./routes/contracts.js"; // Importer les routes de contrats
-import { authenticateToken } from "./middleware/auth.js"; // Importer le middleware
+import contractRoutes from "./routes/contracts.js";
+import { authenticateToken } from "./middleware/auth.js";
 import dotenv from "dotenv";
-import pool from "./db.js"; // ✅ Utilisation du pool unique
+import pool from "./db.js";
 
 dotenv.config();
+
+console.log("🔥 SERVEUR EN COURS DE DÉMARRAGE...");
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
+console.log("🔥 MIDDLEWARE DE LOG AJOUTÉ");
+
+// 🚨 AJOUT DE LOGS POUR DEBUG - TRÈS IMPORTANT
+app.use((req, res, next) => {
+  console.log("🚨🚨🚨 MIDDLEWARE EXÉCUTÉ 🚨🚨🚨");
+  console.log(`🌐 REQUÊTE REÇUE: ${req.method} ${req.url}`);
+  console.log(`📦 Body:`, req.body);
+  next();
+});
+
+console.log("🔥 ROUTES AJOUTÉES");
 app.use("/api/auth", authRoutes);
 app.use("/api/contracts", contractRoutes); // Utiliser les routes de contrats
 
 // Test API
 app.get("/", (req, res) => {
+  console.log("🏠 Route / appelée");
   res.send("🚀 API Mini CRM fonctionne ✅");
 });
 
@@ -109,7 +123,10 @@ app.use((err, req, res, next) => {
 // ⛔ NE PAS démarrer le serveur si on est en mode test
 if (process.env.NODE_ENV !== "test") {
   const PORT = process.env.PORT || 5000;
-  app.listen(PORT, () => console.log(`🚀 Backend sur http://localhost:${PORT}`));
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`🚀 Backend sur http://localhost:${PORT}`);
+    console.log("🔥 SERVEUR COMPLÈTEMENT DÉMARRÉ");
+  });
 }
 
 export default app;

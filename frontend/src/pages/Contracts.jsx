@@ -12,6 +12,8 @@ export default function Contracts() {
 
   const fetchContracts = async () => {
     const res = await api.get("/contracts");
+    console.log("🔍 DONNÉES REÇUES DU BACKEND:", res.data);
+    console.log("🔍 PREMIER CONTRAT:", res.data[0]);
     setContracts(res.data);
   };
 
@@ -42,8 +44,8 @@ export default function Contracts() {
         <TableBody>
           {contracts.map(c => (
             <TableRow key={c.id}>
-              <TableCell>{c.ref}</TableCell>
-              <TableCell>{c.client_name}</TableCell>
+              <TableCell>{c.title || c.ref || "N/A"}</TableCell>        {/* ✅ FALLBACK POUR DEBUG */}
+              <TableCell>{c.client_name || "N/A"}</TableCell>           {/* ✅ FALLBACK POUR DEBUG */}
               <TableCell>{c.amount} €</TableCell>
               <TableCell>{c.status}</TableCell>
               <TableCell>{c.start_date} → {c.end_date}</TableCell>

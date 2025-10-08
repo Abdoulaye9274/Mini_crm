@@ -16,7 +16,7 @@ import FolderIcon from "@mui/icons-material/Folder";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ClientForm from "../components/ClientForm";
-// ... existing code
+
 export default function Clients() {
   const [clients, setClients] = useState([]);
   const [search, setSearch] = useState("");
@@ -26,17 +26,17 @@ export default function Clients() {
   const navigate = useNavigate();
 
   const fetchClients = async () => {
-  try {
-    const response = await api.get("/clients");
-    setClients(response.data);
-  } catch (error) {
-    console.error("Erreur lors de la récupération des clients:", error);
-    setSnackbar({
-      open: true,
-      message: "Impossible de charger les clients.",
-    });
-  }
-};
+    try {
+      const response = await api.get("/clients");
+      setClients(response.data);
+    } catch (error) {
+      console.error("Erreur lors de la récupération des clients:", error);
+      setSnackbar({
+        open: true,
+        message: "Impossible de charger les clients.",
+      });
+    }
+  };
 
   useEffect(() => {
     fetchClients();
@@ -140,18 +140,13 @@ export default function Clients() {
         <Box sx={{ flexGrow: 1 }} />
         <Button
           variant="contained"
-          startIcon={<AddIcon />}
           onClick={() => {
             setEditingClient(null);
             setIsFormOpen(true);
           }}
-          sx={{
-            bgcolor: "#1976d2",
-            color: "#fff",
-            fontWeight: "bold",
-          }}
+          sx={{ bgcolor: "#1976d2", color: "#fff" }}
         >
-          Ajouter un client
+          Ajouter Client
         </Button>
         <ClientForm
           open={isFormOpen}
