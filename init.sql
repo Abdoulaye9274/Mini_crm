@@ -1,6 +1,13 @@
 -- Créer l'utilisateur PostgreSQL crmuser
-CREATE USER crmuser WITH PASSWORD 'crmpass';
-
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT FROM pg_catalog.pg_roles WHERE rolname = 'crmuser'
+  ) THEN
+    CREATE USER crmuser WITH PASSWORD 'crmpass';
+  END IF;
+END
+$$;
 -- Accorder tous les privilèges sur la base de données crm à crmuser
 GRANT ALL PRIVILEGES ON DATABASE crm TO crmuser;
 GRANT ALL PRIVILEGES ON SCHEMA public TO crmuser;
