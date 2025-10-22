@@ -2,10 +2,10 @@ import cors from "cors";
 import express from "express";
 import authRoutes from "./routes/auth.js";
 import contractRoutes from "./routes/contracts.js";
+import serviceRoutes from "./routes/services.js"; // ✅ AJOUTEZ CETTE LIGNE
 import { authenticateToken } from "./middleware/auth.js";
 import dotenv from "dotenv";
 import pool from "./db.js";
-
 dotenv.config();
 
 console.log("🔥 SERVEUR EN COURS DE DÉMARRAGE...");
@@ -26,7 +26,11 @@ app.use((req, res, next) => {
 
 console.log("🔥 ROUTES AJOUTÉES");
 app.use("/api/auth", authRoutes);
-app.use("/api/contracts", contractRoutes); // Utiliser les routes de contrats
+app.use("/api/contracts", contractRoutes);
+app.use("/api/services", serviceRoutes);
+
+// ✅ AJOUTEZ CETTE LIGNE DE DEBUG
+console.log("🚀 TOUTES LES ROUTES CHARGÉES - SERVEUR PRÊT");
 
 // Test API
 app.get("/", (req, res) => {
@@ -63,6 +67,107 @@ app.delete("/api/clients/:id", authenticateToken, async (req, res) => {
   const { id } = req.params;
   await pool.query("DELETE FROM clients WHERE id=$1", [id]);
   res.json({ message: "Client supprimé" });
+});
+
+// ROUTE DOSSIERS - VERSION SIMPLE POUR TEST
+app.get("/api/dossiers", async (req, res) => {
+  console.log("🗂️ Route /api/dossiers appelée !");
+  res.json([
+    {
+      id: 1,
+      client_id: 1,
+      id_dossier: "DOS-2024-001",
+      status: "en_cours",
+      type_dossier: "support",
+      priorite: "haute",
+      sujet: "Test dossier",
+      description: "Description test",
+      client_name: "Client Test",
+      client_email: "test@test.com",
+      responsable_login: "admin",
+      created_at: new Date().toISOString()
+    }
+  ]);
+});
+
+// POST créer un dossier
+app.post("/api/dossiers", authenticateToken, async (req, res) => {
+  const { 
+    client_id, id_dossier, status, type_dossier, priorite, 
+    sujet, description, remarques, document_url, responsable_id,
+    date_echeance, cout_estime 
+  } = req.body;
+  
+  try {
+    const result = await pool.query(
+      `INSERT INTO client_dossiers 
+       (client_id, id_dossier, status, type_dossier, priorite, sujet, description, 
+        remarques, document_url, responsable_id, date_echeance, cout_estime) 
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) 
+       RETURNING *`,
+      [client_id, id_dossier, status, type_dossier, priorite, sujet, description, 
+       remarques, document_url, responsable_id, date_echeance, cout_estime]
+    );
+    res.status(201).json(result.rows[0]);
+  } catch (error) {
+    console.error("Erreur création dossier:", error);
+    res.status(500).json({ error: "Erreur lors de la création" });
+  }
+});
+
+// PUT modifier un dossier
+app.put("/api/dossiers/:id", authenticateToken, async (req, res) => {
+  const { id } = req.params;
+  const { 
+    status, type_dossier, priorite, sujet, description, remarques, 
+    document_url, responsable_id, date_echeance, cout_estime, temps_passe_heures 
+  } = req.body;
+  
+  try {
+    const result = await pool.query(
+      `UPDATE client_dossiers 
+       SET status=$1, type_dossier=$2, priorite=$3, sujet=$4, description=$5, 
+           remarques=$6, document_url=$7, responsable_id=$8, date_echeance=$9, 
+           cout_estime=$10, temps_passe_heures=$11, updated_at=CURRENT_TIMESTAMP
+       WHERE id=$12 RETURNING *`,
+      [status, type_dossier, priorite, sujet, description, remarques, 
+       document_url, responsable_id, date_echeance, cout_estime, temps_passe_heures, id]
+    );
+    res.json(result.rows[0]);
+  } catch (error) {
+    console.error("Erreur modification dossier:", error);
+    res.status(500).json({ error: "Erreur lors de la modification" });
+  }
+});
+
+// DELETE supprimer un dossier
+app.delete("/api/dossiers/:id", authenticateToken, async (req, res) => {
+  const { id } = req.params;
+  try {
+    await pool.query("DELETE FROM client_dossiers WHERE id = $1", [id]);
+    res.json({ message: "Dossier supprimé" });
+  } catch (error) {
+    console.error("Erreur suppression dossier:", error);
+    res.status(500).json({ error: "Erreur lors de la suppression" });
+  }
+});
+
+// GET dossiers d'un client spécifique
+app.get("/api/dossiers/client/:clientId", authenticateToken, async (req, res) => {
+  const { clientId } = req.params;
+  try {
+    const result = await pool.query(`
+      SELECT d.*, u.login as responsable_login
+      FROM client_dossiers d
+      LEFT JOIN users u ON d.responsable_id = u.id
+      WHERE d.client_id = $1
+      ORDER BY d.created_at DESC
+    `, [clientId]);
+    res.json(result.rows);
+  } catch (error) {
+    console.error("Erreur dossiers client:", error);
+    res.status(500).json({ error: "Erreur serveur" });
+  }
 });
 
 // ✅ Endpoint pour les stats

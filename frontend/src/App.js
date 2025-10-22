@@ -6,8 +6,8 @@ import Dashboard from "./pages/Dashboard"; // ✅ importe ton Dashboard
 import Contracts from "./pages/Contracts";
 import DashboardLayout from "./components/DashboardLayout";
 import Settings from "./pages/Settings"; // Assurez-vous que cette ligne est ajoutée
-
-
+import Services from "./pages/Services";
+import Dossiers from "./pages/Dossiers";
 function PrivateRoute({ children }) {
   const token = localStorage.getItem("token");
   return token ? children : <Navigate to="/" replace />;
@@ -31,7 +31,9 @@ export default function App() {
   <Route path="clients" element={<Clients />} />
   {/* 📌 Route contrats */}
   <Route path="contracts" element={<Contracts />} />
-  {/* �� Route paramètres */}
+  {/* 📌 Route services */}
+  <Route path="services" element={<Services />} /> {/* ✅ AJOUTEZ CETTE LIGNE */}
+  <Route path="dossiers" element={<Dossiers />} />
   <Route path="settings" element={<Settings />} /> {/* Ajouter la nouvelle route */}
 </Route>
 

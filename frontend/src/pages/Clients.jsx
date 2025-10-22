@@ -43,7 +43,7 @@ export default function Clients() {
   }, []);
 
   const handleView = (id) => {
-    navigate(`/clients/${id}`);
+    navigate(`/dashboard/dossiers?client=${id}`);
   };
 
   const handleEdit = (client) => {

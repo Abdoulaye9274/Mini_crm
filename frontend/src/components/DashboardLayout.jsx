@@ -8,6 +8,7 @@ import PeopleIcon from "@mui/icons-material/People";
 import SettingsIcon from "@mui/icons-material/Settings";
 import LogoutIcon from "@mui/icons-material/Logout";
 import DescriptionIcon from "@mui/icons-material/Description";
+import BuildIcon from "@mui/icons-material/Build";
 
 const drawerWidth = 220;
 
@@ -52,6 +53,11 @@ export default function DashboardLayout() {
   <ListItemButton onClick={() => navigate("/dashboard/contracts")}>
     <ListItemIcon sx={{ color: "#fff" }}><DescriptionIcon /></ListItemIcon>
     <ListItemText primary="Contrats" />
+  </ListItemButton>
+
+  <ListItemButton onClick={() => navigate("/dashboard/services")}>
+    <ListItemIcon sx={{ color: "#fff" }}><BuildIcon /></ListItemIcon>
+    <ListItemText primary="Services" />
   </ListItemButton>
 
   <ListItemButton onClick={() => navigate("/dashboard/settings")}>
