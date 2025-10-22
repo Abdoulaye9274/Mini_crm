@@ -45,7 +45,8 @@ export default function Dossiers() {
 
   useEffect(() => {
     fetchDossiers();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // ✅ Désactive l'erreur pour cette ligne
 
   const getStatusColor = (status) => {
     switch (status) {
