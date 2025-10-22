@@ -69,7 +69,7 @@ export default function ServiceAssignDialog({ open, onClose, onAssigned, service
     }
   };
 
-  const selectedService = services.find(s => s.id == formData.service_id);
+  const selectedService = services.find(s => s.id === formData.service_id);
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>

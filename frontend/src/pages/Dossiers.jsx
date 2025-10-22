@@ -18,8 +18,8 @@ import AddIcon from "@mui/icons-material/Add";
 
 export default function Dossiers() {
   const [dossiers, setDossiers] = useState([]);
-  const [search, setSearch] = useState("");
-  const [snackbar, setSnackbar] = useState({ open: false, message: "" });
+  // const [search, setSearch] = useState("");
+  // const [snackbar, setSnackbar] = useState({ open: false, message: "" });
   const [searchParams] = useSearchParams(); // ✅ AJOUTEZ CETTE LIGNE
   const clientId = searchParams.get('client'); // ✅ RÉCUPÈRE L'ID CLIENT
 
@@ -30,7 +30,7 @@ export default function Dossiers() {
       
       // ✅ FILTRER PAR CLIENT SI SPÉCIFIÉ
       if (clientId) {
-        dossiersData = dossiersData.filter(d => d.client_id == clientId);
+        dossiersData = dossiersData.filter(d => d.client_id === clientId);
       }
       
       setDossiers(dossiersData);
