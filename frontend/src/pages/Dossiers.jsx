@@ -36,10 +36,10 @@ export default function Dossiers() {
       setDossiers(dossiersData);
     } catch (error) {
       console.error("Erreur lors de la récupération des dossiers:", error);
-      setSnackbar({
-        open: true,
-        message: "Impossible de charger les dossiers.",
-      });
+      // setSnackbar({
+      //   open: true,
+      //   message: "Impossible de charger les dossiers.",
+      // });
     }
   };
 
@@ -56,10 +56,7 @@ export default function Dossiers() {
     }
   };
 
-  const filteredDossiers = dossiers.filter((d) =>
-    d.id_dossier?.toLowerCase().includes(search.toLowerCase()) ||
-    d.client_name?.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredDossiers = dossiers;
 
   return (
     <Box>
