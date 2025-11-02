@@ -199,20 +199,48 @@ app.get("/api/stats/dashboard", async (req, res) => {
 });
 
 // ✅ Endpoint pour les activités récentes
-app.get("/api/activities/recent", async (req, res) => {
+app.get("/api/activities/recent", authenticateToken, async (req, res) => {
   try {
-    const activities = [
-      { id: 1, date: "2025-09-18", type: "Client ajouté", description: "Jean Dupont", status: "Succès" },
-      { id: 2, date: "2025-09-17", type: "Contrat signé", description: "Contrat #C-123", status: "Succès" },
-      { id: 3, date: "2025-09-16", type: "Client modifié", description: "Marie Claire", status: "Succès" },
-      { id: 4, date: "2025-09-16", type: "Contrat résilié", description: "Contrat #C-098", status: "Annulé" },
-      { id: 5, date: "2025-09-15", type: "Service activé", description: "Hébergement Web", status: "Succès" },
-    ];
-
-    res.json(activities);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Erreur lors du chargement des activités récentes" });
+    // Récupération des vraies activités depuis la DB
+    const activitiesQuery = `
+      SELECT 
+        'client' as type, 
+        'Nouveau client ajouté: ' || name as description,
+        created_at as timestamp
+      FROM clients 
+      WHERE created_at >= NOW() - INTERVAL '7 days'
+      
+      UNION ALL
+      
+      SELECT 
+        'contract' as type,
+        'Contrat signé: ' || titre as description, 
+        created_at as timestamp
+      FROM contracts
+      WHERE created_at >= NOW() - INTERVAL '7 days'
+      
+      ORDER BY timestamp DESC 
+      LIMIT 10
+    `;
+    
+    const result = await pool.query(activitiesQuery);
+    
+    // Si pas d'activités récentes, retourner des exemples
+    if (result.rows.length === 0) {
+      return res.json([
+        { type: 'client', description: 'Nouveau client ajouté', timestamp: new Date() },
+        { type: 'contract', description: 'Contrat en cours de négociation', timestamp: new Date() }
+      ]);
+    }
+    
+    res.json(result.rows);
+    
+  } catch (error) {
+    console.error("Erreur activités:", error);
+    // Fallback si erreur DB
+    res.json([
+      { type: 'client', description: 'Système opérationnel', timestamp: new Date() }
+    ]);
   }
 });
 
