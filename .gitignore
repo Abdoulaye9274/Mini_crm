@@ -1,0 +1,19 @@
+# Secrets - Ne jamais commiter
+backend/.env
+backend/.env.local
+backend/.env.production
+backend/.env.test
+.env
+.env.local
+
+# ✅ MAIS AUTORISEZ .env.example
+!backend/.env.example
+!.env.example
+
+# Données sensibles
+init.sql
+*.sql
+
+# Logs
+*.log
+logs/
